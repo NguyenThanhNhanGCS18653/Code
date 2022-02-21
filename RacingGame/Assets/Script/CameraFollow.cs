@@ -48,7 +48,14 @@ public class CameraFollow : MonoBehaviour
 
         target[carIndex].gameObject.SetActive(true);
     }
-
+    private void Update()
+    {
+        for (int i = 0; i < target.Length; i++)
+        {
+            if (target[i] == null)
+                return;
+        }
+    }
     private void FixedUpdate()
     {
         HandTranslation();

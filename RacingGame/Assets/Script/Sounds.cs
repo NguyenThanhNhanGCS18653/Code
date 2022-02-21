@@ -34,12 +34,12 @@ public class Sounds : MonoBehaviour
 
             case ("engine"):
                 audioSource.clip = engineSound;
-                audioSource.PlayOneShot(engineSound, .6f);
+                audioSource.PlayOneShot(engineSound, .3f);
                 break;
 
             case ("brake"):
                 audioSource.clip = brake;
-                audioSource.PlayOneShot(brake, 1f);
+                audioSource.PlayOneShot(brake, .45f);
                 break;
         }
     }

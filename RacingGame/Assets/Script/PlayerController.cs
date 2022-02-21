@@ -30,13 +30,16 @@ public class PlayerController : MonoBehaviour
         {
             return health;
         }
+        set
+        {
+            health = value;
+        }
     }
-
     [SerializeField]
     private Image healthBar;
     [SerializeField]
     private Text statTxt;
-    private float maxHealth = 10f;
+    private float maxHealth = 100000000f;
 
 
     [SerializeField]
@@ -83,11 +86,16 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     private Sounds sound;
-    private void Awake()
-    {
-        coin = 100;
-    }
 
+    [SerializeField]
+    private SceneFader fader;
+
+    [SerializeField]
+    private GameObject destroyCarEffect;
+    [SerializeField]
+    private GameObject destroyPotionEffect;
+    [SerializeField]
+    private GameObject gameOverUI;
     private void Start()
     {
         health = maxHealth;
@@ -96,8 +104,7 @@ public class PlayerController : MonoBehaviour
         energy = maxEnergy;
         energyBar.fillAmount = maxEnergy;
 
-        
-        coinTxt.text = "COINS: " + PlayerPrefs.GetInt("NumberOfCoins").ToString();
+        coin = PlayerPrefs.GetInt("NumberOfCoins");
     }
 
     private void Update()
@@ -106,10 +113,7 @@ public class PlayerController : MonoBehaviour
         {
             health = maxHealth;
         }
-        if (health <= 0)
-        {
-            health = 0f;
-        }
+       
         if (Input.GetKeyDown(KeyCode.K))
         {
             health -= 2f;
@@ -137,8 +141,9 @@ public class PlayerController : MonoBehaviour
             energyBar.fillAmount = Mathf.Lerp(energyBar.fillAmount, currentFillEnergy, Time.deltaTime * lerpSpeed);
         }
         statTxt2.text = energy.ToString();
-        
-        PlayerPrefs.SetInt("NumberOfCoins", coin);
+
+        coinTxt.text = "COINS: " + coin.ToString();
+        StartCoroutine(SaveCoin());
 
         UseEnergy();
     }
@@ -157,7 +162,25 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(2f);
         motor.MyMotorForce -= 200f;
     }
-    
+    IEnumerator SaveCoin()
+    {
+        yield return new WaitForSeconds(1f);
+        PlayerPrefs.SetInt("NumberOfCoins", coin);
+    }
+
+    public void ApplyDamage(float dmg)
+    {
+        health -= dmg;
+        if (health <= 0)
+        {
+            health = 0f;
+            gameOverUI.SetActive(true);
+            Instantiate(destroyCarEffect, transform.position, transform.rotation);
+            Time.timeScale = 0f;
+            Destroy(gameObject);
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == tagCoin)
@@ -170,6 +193,7 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.tag == tagEnergyPotion)
         {
             energy += 2.5f;
+            Instantiate(destroyPotionEffect, transform.position, transform.rotation);
             sound.PlaySound("coin");
             Destroy(other.gameObject);
             
@@ -178,6 +202,7 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.tag == tagHealthPotion)
         {
             health += 2;
+            Instantiate(destroyPotionEffect, transform.position, transform.rotation);
             sound.PlaySound("coin");
             Destroy(other.gameObject);
             
@@ -185,13 +210,13 @@ public class PlayerController : MonoBehaviour
 
         if (other.gameObject.tag == tagWinLevel)
         {
-            SceneManager.LoadScene(4);
+            fader.FadeTo(4);
             PlayerPrefs.SetInt("levelLoad", unlockLevel);
         }
 
         if (other.gameObject.tag == tagWinLevel2)
         {
-            SceneManager.LoadScene(5);
+            fader.FadeTo(5);
             PlayerPrefs.SetInt("levelLoad", unlockLevel3);
         }
     }

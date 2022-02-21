@@ -8,24 +8,21 @@ public class GameOverUI : MonoBehaviour
     [SerializeField]
     private GameObject gameOverUI;
 
+    [SerializeField]
+    private SceneFader fader;
+
     private void Start()
     {
         gameOverUI.SetActive(false);
     }
-
-    private void Update()
-    {
-        if (PlayerController.MyInstance.MyHealth <= 0)
-        {
-            gameOverUI.SetActive(true);
-        }
-    }
     public void Retry()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        Time.timeScale = 1f;
+        fader.FadeTo(SceneManager.GetActiveScene().buildIndex);
     }
     public void Menu()
     {
-        SceneManager.LoadScene(0);
+        Time.timeScale = 1f;
+        fader.FadeTo(0);
     }
 }

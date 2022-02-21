@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMotor : MonoBehaviour
 {
@@ -29,6 +30,11 @@ public class PlayerMotor : MonoBehaviour
     [SerializeField]
     private GameObject startEffect;
 
+   
+    private float timeStart = 3f;
+    [SerializeField]
+    private Text timeStartTxt;
+
     private float zInput;
     private float yInput;
     private float currentSteerAngle;
@@ -56,6 +62,7 @@ public class PlayerMotor : MonoBehaviour
 
     private void Update()
     {
+        
         if (Mathf.Abs(zInput) > 0.1f)
         {
             sound.PlaySound("engine");
@@ -64,7 +71,6 @@ public class PlayerMotor : MonoBehaviour
         }
         else
         {
-            sound.PlaySound("idle");
             smokeEffect.SetActive(false);
             startEffect.SetActive(false);
         }
@@ -72,12 +78,24 @@ public class PlayerMotor : MonoBehaviour
 
     private void FixedUpdate()
     {
-        GetInput();
-        HandleMotor();
-        HandleSteering();
-        UpdateWheel();
+        //timeStart -= 1 * Time.fixedDeltaTime;
+        //timeStartTxt.text = timeStart.ToString("0");
+        StartCoroutine(CountDown());
+        if (timeStart <= 0)
+        {
+            GetInput();
+            HandleMotor();
+            HandleSteering();
+            UpdateWheel();
+            timeStartTxt.gameObject.SetActive(false);
+        }
     }
-
+    IEnumerator CountDown()
+    {
+        yield return new WaitForSeconds(.5f);
+        timeStart -= 1 * Time.fixedDeltaTime;
+        timeStartTxt.text = timeStart.ToString("0");
+    }
     void GetInput()
     {
         zInput = Input.GetAxis("Vertical");
@@ -85,7 +103,7 @@ public class PlayerMotor : MonoBehaviour
         yInput = Input.GetAxis("Horizontal");
 
         isBreaking = Input.GetKey(KeyCode.Space);
-        if (isBreaking)
+        if (isBreaking  && Mathf.Abs(zInput) != 0)
         {
             sound.PlaySound("brake");
         }

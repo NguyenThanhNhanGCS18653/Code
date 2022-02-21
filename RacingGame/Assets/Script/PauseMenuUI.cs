@@ -7,6 +7,10 @@ public class PauseMenuUI : MonoBehaviour
 {
     [SerializeField]
     private GameObject pauseMenu;
+
+    [SerializeField]
+    private SceneFader fader;
+
     private void Start()
     {
         pauseMenu.SetActive(false);
@@ -28,11 +32,11 @@ public class PauseMenuUI : MonoBehaviour
     public void Retry()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        fader.FadeTo(SceneManager.GetActiveScene().buildIndex);
     }
     public void Menu()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(0);
+        fader.FadeTo(0);
     }
 }

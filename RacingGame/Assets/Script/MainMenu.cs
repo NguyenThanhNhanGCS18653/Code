@@ -5,9 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    [SerializeField]
+    private SceneFader fader;
+
     public void Play()
     {
-        SceneManager.LoadScene(1);
+        fader.FadeTo(1);
     }
     public void Quit()
     {

@@ -17,9 +17,14 @@ public class ShopManager : MonoBehaviour
 
     [SerializeField]
     private Text coinTxt;
+    private int coin;
 
     [SerializeField]
     private CarBluePrint[] cars;
+
+    [SerializeField]
+    private SceneFader fader;
+
     void Start()
     {
         foreach (CarBluePrint car in cars)
@@ -47,10 +52,13 @@ public class ShopManager : MonoBehaviour
     void Update()
     {
         UpdateUI();
-
-        coinTxt.text = "COINS: " + PlayerPrefs.GetInt("NumberOfCoins").ToString();
+        coin = PlayerPrefs.GetInt("NumberOfCoins");
+        coinTxt.text = "COINS: " + coin.ToString();
     }
-
+    private void LateUpdate()
+    {
+        PlayerPrefs.SetInt("NumberOfCoins", coin);
+    }
     public void NextButton()
     {
         carModels[carIndex].SetActive(false);
@@ -91,7 +99,7 @@ public class ShopManager : MonoBehaviour
     }
     public void PlayyButton()
     {
-        SceneManager.LoadScene(2);
+        fader.FadeTo(2);
     }
 
     public void UnlockCar()
@@ -100,7 +108,7 @@ public class ShopManager : MonoBehaviour
         PlayerPrefs.SetInt(c.MyName, 1);
         PlayerPrefs.SetInt("SelectCar", carIndex);
         c.MyIsUnlocked = true;
-        PlayerPrefs.SetInt("NumberOfCoins", PlayerPrefs.GetInt("NumberOfCoins") - c.MyPrice);
+        PlayerPrefs.SetInt("NumberOfCoins", coin - c.MyPrice);
     }
 
     private void UpdateUI()
@@ -114,7 +122,7 @@ public class ShopManager : MonoBehaviour
         {
             buyBtn.gameObject.SetActive(true);
             buyBtn.GetComponentInChildren<Text>().text = "Buy - " + c.MyPrice;
-            if (PlayerPrefs.GetInt("NumberOfCoins") >= c.MyPrice)
+            if (coin >= c.MyPrice)
             {
                 buyBtn.interactable = true;
             }

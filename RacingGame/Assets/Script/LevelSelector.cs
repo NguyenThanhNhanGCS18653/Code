@@ -8,6 +8,8 @@ public class LevelSelector : MonoBehaviour
 {
     [SerializeField]
     private Button[] buttons;
+    [SerializeField]
+    private SceneFader fader;
     private void Start()
     {
         int levelLoad = PlayerPrefs.GetInt("levelLoad", 1);
@@ -23,6 +25,6 @@ public class LevelSelector : MonoBehaviour
 
     public void SelectLv(int index)
     {
-        SceneManager.LoadScene(index);
+        fader.FadeTo(index);
     }
 }
